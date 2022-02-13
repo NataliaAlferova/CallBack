@@ -1,7 +1,8 @@
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -9,16 +10,16 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CallBackTest {
+class ChromeTest {
     private WebDriver driver;
 
     @BeforeAll
-    public static void setUpAll() {
-        System.setProperty("webdriver.chrome.driver", "driver/mac/chromedriver");
+    static void setupClass() {
+        WebDriverManager.chromedriver().setup();
     }
 
     @BeforeEach
-    public void setUp() {
+    void setupTest() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
@@ -26,6 +27,12 @@ public class CallBackTest {
         driver = new ChromeDriver(options);
     }
 
+    @AfterEach
+    void teardown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
 
     @Test
     public void shouldSendForm() {
@@ -39,11 +46,5 @@ public class CallBackTest {
         String actualText = driver.findElement(By.cssSelector("[data-test-id=order-success]")).getText().trim();
 
         assertEquals(expectedText, actualText);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        driver.quit();
-        driver = null;
     }
 }
